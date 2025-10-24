@@ -34,5 +34,5 @@ class Graph:
     def a_star(self, start, target, return_cost = False):
         return a_star(self, start, target, return_cost)
 
-    def djikstra(self, start, target):
+    def djikstra(self, start, target=None):
         return djikstra(self, start, target)

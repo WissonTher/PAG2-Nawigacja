@@ -25,4 +25,4 @@ def djikstra(graph, start, target=None):
             return lens[u]
     if target is not None:
         return float('inf')
-    return len
+    return lens
