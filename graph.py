@@ -1,4 +1,4 @@
-#from algorithms.djikstra import djikstra
+from algorithms.djikstra import djikstra
 from algorithms.a_star import a_star
 
 class Graph:
@@ -33,3 +33,6 @@ class Graph:
 
     def a_star(self, start, target, return_cost = False):
         return a_star(self, start, target, return_cost)
+
+    def djikstra(self, start, target):
+        return djikstra(self, start, target)
