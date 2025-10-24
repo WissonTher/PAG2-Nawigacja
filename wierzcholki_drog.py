@@ -2,9 +2,9 @@ import arcpy
 import numpy as np
 
 arcpy.env.workspace = r"./torun_cut"
-
+file = 'cut_torun.shp'
 def przetworz_plik(shapefile):
-    cursor = arcpy.SearchCursor('cut_torun.shp')
+    cursor = arcpy.SearchCursor(shapefile)
     wierzcholki = {}
     krawedzie = {}
 
@@ -32,7 +32,7 @@ def przetworz_plik(shapefile):
 
     return wierzcholki, krawedzie
 
-wierzcholki, krawedzie = przetworz_plik('./torun_cut.shp')
+wierzcholki, krawedzie = przetworz_plik(file)
 
 print(wierzcholki)
 print(krawedzie)
