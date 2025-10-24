@@ -2,3 +2,6 @@ skjz_torun
 **/__pycache__/
 *.py[cod]
 *$py.class
+test
+test.py
+functions.py
