@@ -8,13 +8,13 @@ class Graph:
         self.n_len = n_len
         self.nodes = [''] * n_len
         self.positions = {}
+        self.adj = [[] for _ in range(n_len)]
 
-        for e, edge in edges.items():
-            u = edges[e][0]
-            v = edges[e][1]
-            w = edges[e][2]
+        for e, (u, v, w) in edges.items():
             self.links[u][v] = w
             self.links[v][u] = w
+            self.adj[u].append([v, w])
+            self.adj[v].append([u, w])
         for node, node_d in nodes.items():
             self.nodes[node] = node
 

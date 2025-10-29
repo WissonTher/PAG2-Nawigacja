@@ -1,5 +1,5 @@
 import heapq
-def djikstra(graph, start, target=None):
+def djikstra(graph, start, target = None):
     n = graph.n_len
     inf = float('inf')
     lens = [inf] * n
@@ -10,20 +10,21 @@ def djikstra(graph, start, target=None):
     heap = [(0.0, start)]
     while heap:
         d, u = heapq.heappop(heap)
-        if d != lens[u] or S[u]:
+        if d > lens[u] or S[u]:
             continue
 
         S[u] = True
         if target is not None and u == target:
             break
 
-        for v, w in enumerate(graph.links[u]):
-            if w != 0 and not S[v]:
-                alt = d + w
-                if alt < lens[v]:
-                    lens[v] = alt
-                    pre[v] = u
-                    heapq.heappush(heap, (alt, v))
+        for v, w in graph.adj[u]:
+            if S[v]:
+                continue
+            alt = d + w
+            if alt < lens[v]:
+                lens[v] = alt
+                pre[v] = u
+                heapq.heappush(heap, (alt, v))
 
     if target is not None:
         if lens[target] == inf:
