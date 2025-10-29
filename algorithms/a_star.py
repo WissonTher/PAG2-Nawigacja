@@ -9,11 +9,11 @@ def heuristics(graph, a, b):
     return 0
 
 def a_star(graph, start, target, return_cost=False):
-    start_id = graph.wierzcholki.index(start)
-    target_id = graph.wierzcholki.index(target)
+    start_id = graph.nodes.index(start)
+    target_id = graph.nodes.index(target)
 
-    g = [float('inf')] * graph.lenkr
-    f = [float('inf')] * graph.lenkr
+    g = [float('inf')] * graph.n_len
+    f = [float('inf')] * graph.n_len
     g[start_id] = 0
     f[start_id] = heuristics(graph, start, target)
 
@@ -29,17 +29,17 @@ def a_star(graph, start, target, return_cost=False):
         S.add(u)
 
         if u == target_id:
-            path = [graph.wierzcholki[u]]
+            path = [graph.nodes[u]]
             while u in came_from:
                 u = came_from[u]
-                path.append(graph.wierzcholki[u])
+                path.append(graph.nodes[u])
             path = path[::-1]
             if return_cost:
                 return path, g[target_id]
             return path
         
-        for v in range(graph.lenkr):
-            w = graph.polaczenia[u][v]
+        for v in range(graph.n_len):
+            w = graph.links[u][v]
             if w == 0 or v in S:
                 continue
 
@@ -49,8 +49,8 @@ def a_star(graph, start, target, return_cost=False):
                 g[v] = temp_g
                 f[v] = temp_g + heuristics(
                     graph,
-                    graph.wierzcholki[v],
-                    graph.wierzcholki[target_id]
+                    graph.nodes[v],
+                    graph.nodes[target_id]
                 )
                 heapq.heappush(Q, (f[v], v))
     

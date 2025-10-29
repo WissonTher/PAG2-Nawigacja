@@ -1,60 +1,60 @@
+import heapq
 def djikstra(graph, start, target=None):
-    start_id = graph.wierzcholki.index(start)
-    target_id = graph.wierzcholki.index(target) if target is not None else None
-    n = graph.lenkr
-    lens = [float('inf')] * n
-    lens[start_id] = 0.0
+    n = graph.n_len
+    inf = float('inf')
+    lens = [inf] * n
+    lens[start] = 0.0
     S = [False] * n
     pre = [-1] * n
 
-    for _ in range(n):
-        minlen = float('inf')
-        u = None
-        for i in range(n):
-            if not S[i] and lens[i] < minlen:
-                minlen = lens[i]
-                u = i
-
-        if u is None or lens[u] == float('inf'):
-            break
+    heap = [(0.0, start)]
+    while heap:
+        d, u = heapq.heappop(heap)
+        if d != lens[u] or S[u]:
+            continue
 
         S[u] = True
+        if target is not None and u == target:
+            break
 
-        if target_id is not None and u == target_id:
-            path_nodes = []
-            current = u
-            while current != -1:
-                path_nodes.append(current)
-                if current == start_id:
-                    break
-                current = pre[current]
-            if not path_nodes or path_nodes[-1] != start_id:
-                return [], float('inf')
-            path_nodes.reverse()
-            path = [graph.wierzcholki[i] for i in path_nodes]
-            return path, lens[u]
-
-        for v in range(n):
-            w = graph.polaczenia[u][v]
+        for v, w in enumerate(graph.links[u]):
             if w != 0 and not S[v]:
-                alt = lens[u] + w
+                alt = d + w
                 if alt < lens[v]:
                     lens[v] = alt
                     pre[v] = u
+                    heapq.heappush(heap, (alt, v))
 
-    if target_id is not None:
-        if lens[target_id] == float('inf'):
-            return [], float('inf')
-        path_nodes = []
-        current = target_id
+    if target is not None:
+        if lens[target] == inf:
+            return None, inf
+        path = []
+        current = target
         while current != -1:
-            path_nodes.append(current)
-            if current == start_id:
+            path.append(current)
+            if current == start:
                 break
             current = pre[current]
-        if not path_nodes or path_nodes[-1] != start_id:
-            return [], float('inf')
-        path_nodes.reverse()
-        path = [graph.wierzcholki[i] for i in path_nodes]
-        return path, lens[target_id]
-    return lens
+        if not path or path[-1] != start:
+            return None, inf
+        path.reverse()
+        return path, lens[target]
+    else:
+        paths = []
+        for targ in range(n):
+            if lens[targ] == inf:
+                paths.append(None)
+                continue
+            path = []
+            current = targ
+            while current != -1:
+                path.append(current)
+                if current == start:
+                    break
+                current = pre[current]
+            if not path or path[-1] != start:
+                paths.append(None)
+            else:
+                path.reverse()
+                paths.append(path)
+        return paths, lens
