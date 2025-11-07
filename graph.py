@@ -1,20 +1,22 @@
 from algorithms.djikstra import djikstra
 from algorithms.a_star import a_star
+from typing import Dict, List, Tuple
+from collections import defaultdict
 
 class Graph:
     def __init__(self, nodes, edges):
         n_len = len(nodes)
-        self.links = [[0] * n_len for _ in range(n_len)]
+        self.links: List[Dict[int, float]] = [defaultdict(float) for _ in range(n_len)]
         self.n_len = n_len
         self.nodes = [''] * n_len
         self.positions = {}
-        self.adj = [[] for _ in range(n_len)]
+        self.adj: List[List[Tuple[int, float, int]]] = [[] for _ in range(n_len)]
 
         for e, (u, v, w) in edges.items():
             self.links[u][v] = w
             self.links[v][u] = w
-            self.adj[u].append([v, w])
-            self.adj[v].append([u, w])
+            self.adj[u].append([v, w, e])
+            self.adj[v].append([u, w, e])
         for node, node_d in nodes.items():
             self.nodes[node] = node
 
