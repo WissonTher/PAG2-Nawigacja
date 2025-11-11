@@ -1,5 +1,5 @@
 import heapq
-def djikstra(graph, start, target=None):
+def djikstra(graph, start, target=None, max_cost=None):
     n = graph.n_len
     inf = float('inf')
     lens = [inf] * n
@@ -59,7 +59,7 @@ def djikstra(graph, start, target=None):
             if S[v]:
                 continue
             alt = d + w
-            if alt < lens[v]:
+            if alt < lens[v] and (max_cost is None or alt <= max_cost):
                 lens[v] = alt
                 pre[v] = u
                 preedge[v] = e
