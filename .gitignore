@@ -6,3 +6,4 @@ test
 test.py
 functions.py
 /prr.py
+*.ipynb
