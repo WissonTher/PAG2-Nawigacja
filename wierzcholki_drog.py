@@ -2,10 +2,11 @@ import arcpy
 import numpy as np
 import time
 from scipy.spatial import KDTree
+import pickle
 
 start = time.perf_counter()
 arcpy.env.workspace = r"./test"
-file = 'drogi.shp'
+file = 'warmia_skjz.shp'
 
 def indeks_przestrzenny(wierzcholki):
     wspolrzedne_lista = []
@@ -36,7 +37,6 @@ def najblizszy_wierzcholek(drzewo, indeks_wierzcholka, x_klik, y_klik):
     oryginalne_id = indeks_wierzcholka[indeks]
 
     return oryginalne_id, dystans
-
 def przetworz_plik(shapefile):
     cursor = arcpy.SearchCursor(shapefile)
     wierzcholki = {}
@@ -66,20 +66,34 @@ def przetworz_plik(shapefile):
 
         wektor = np.array([p2[0] - p1[0], p2[1] - p1[1]])
         dlugosc = np.linalg.norm(wektor)
+
+        predkosc_kmh = predkosci.get(klasa_drogi, 20)
+        predkosc_mps = predkosc_kmh/3.6
+
+        czas_s = dlugosc/predkosc_mps
+
         krawedzie[row.FID] = [id1, id2, dlugosc, klasa_drogi]
-        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, row.FID])
-        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, row.FID])
+        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, row.FID, klasa_drogi, predkosc_kmh, czas_s])
+        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, row.FID, klasa_drogi, predkosc_kmh, czas_s])
 
     return wierzcholki, krawedzie, lista_sasiedztwa
 
-# wierzcholki, krawedzie, lista_sasiedztwa = przetworz_plik(file)
-#
+wierzcholki, krawedzie, lista_sasiedztwa = przetworz_plik(file)
+
 # drzewo_kd, mapa_id = indeks_przestrzenny(wierzcholki)
 # punkt1 = arcpy.Point(20.479, 53.778)
 # znalezione_id, dystans = najblizszy_wierzcholek(drzewo_kd, mapa_id, punkt1.X, punkt1.Y)
+
+with open('lista_sasiedztwa.pickle', 'wb') as f:
+    pickle.dump(lista_sasiedztwa, f)
+
 # print(wierzcholki[znalezione_id])
 # print(znalezione_id, dystans)
-# # print(krawedzie)
+# # print(lista_sasiedztwa)
 # end = time.perf_counter()
 # print(end - start)
 # print (len(wierzcholki), len(krawedzie))
+
+with open('lista_sasiedztwa.pickle', 'rb') as f:
+    wczytane_dane = pickle.load(f)
+
