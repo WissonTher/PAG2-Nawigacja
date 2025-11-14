@@ -87,6 +87,9 @@ wierzcholki, krawedzie, lista_sasiedztwa = przetworz_plik(file)
 with open('lista_sasiedztwa.pickle', 'wb') as f:
     pickle.dump(lista_sasiedztwa, f)
 
+with open('wierzcholki.pickle', 'wb') as f:
+    pickle.dump(wierzcholki, f)
+
 # print(wierzcholki[znalezione_id])
 # print(znalezione_id, dystans)
 # # print(lista_sasiedztwa)
@@ -94,6 +97,6 @@ with open('lista_sasiedztwa.pickle', 'wb') as f:
 # print(end - start)
 # print (len(wierzcholki), len(krawedzie))
 
-with open('lista_sasiedztwa.pickle', 'rb') as f:
-    wczytane_dane = pickle.load(f)
+# with open('lista_sasiedztwa.pickle', 'rb') as f:
+#     wczytane_dane = pickle.load(f)
 
