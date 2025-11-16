@@ -22,7 +22,7 @@ def djikstra(graph, start, target=None, max_cost=None):
             S[u] = 1
             if u == target:
                 break
-            for v, w, e in adj[u]:
+            for v, _, e, _, _, w in adj[u]:
                 if S[v]:
                     continue
                 alt = d + w
@@ -33,7 +33,7 @@ def djikstra(graph, start, target=None, max_cost=None):
                     heappush(heap, (alt, v))
 
         if lens[target] == inf:
-            return inf, None, None
+            return -1, None, None
 
         path = []
         edges = []
@@ -45,7 +45,7 @@ def djikstra(graph, start, target=None, max_cost=None):
             edges.append(preedge[cur])
             cur = pre[cur]
         if not path or path[-1] != start:
-            return inf, None, None
+            return -1, None, None
         path.reverse()
         edges.reverse()
         return lens[target], path, edges
@@ -55,7 +55,7 @@ def djikstra(graph, start, target=None, max_cost=None):
         if S[u] or d != lens[u]:
             continue
         S[u] = 1
-        for v, w, e in adj[u]:
+        for v, _, e, _, _, w in adj[u]:
             if S[v]:
                 continue
             alt = d + w
@@ -97,4 +97,4 @@ def djikstra(graph, start, target=None, max_cost=None):
                 if finished != start and edges:
                     edges.pop()
 
-    return lens, paths, alledges
+    return [(-1 if x == inf else x) for x in lens], paths, alledges

@@ -1,35 +1,41 @@
 from fastapi import FastAPI
 from graph import Graph
+import pickle
+import numpy as np
+from nearest_node import indeks_przestrzenny, najblizszy_wierzcholek
+
 app = FastAPI()
-
-from wierzcholki_drog import przetworz_plik, indeks_przestrzenny, najblizszy_wierzcholek
-wierzcholki, krawedzie, lista_sasiedztwa = przetworz_plik('warmia_skjz.shp')
+print("loading...")
+with open('lista_sasiedztwa.pickle', 'rb') as f:
+    lista_sasiedztwa = pickle.load(f)
+with open('wierzcholki.pickle', 'rb') as f:
+    wierzcholki = pickle.load(f)
 drzewo, indeks_wierzcholka = indeks_przestrzenny(wierzcholki)
-g = Graph(wierzcholki, krawedzie, lista_sasiedztwa)
+g = Graph(wierzcholki, lista_sasiedztwa)
+print("loaded")
+@app.get("/djikstratarget/{start_y}/{start_x}/{target_y}/{target_x}")
+def djikstratarget(start_y, start_x, target_y, target_x):
 
-@app.get("/djikstratarget/{start_x}/{start_y}/{target_x}/{target_y}")
-def djikstratarget(start_x, start_y, target_x, target_y):
-
-    start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_x), float(start_y))
-    target, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(target_x), float(target_y))
+    start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_y), float(start_x))
+    target, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(target_y), float(target_x))
     d, p, e = g.djikstra(start, target)
 
     return {'cost': d,
         'edges': e}
 
-@app.get("/a_star/{start_x}/{start_y}/{target_x}/{target_y}")
-def djikstratarget(start_x, start_y, target_x, target_y):
+@app.get("/a_star/{start_y}/{start_x}/{target_y}/{target_x}")
+def a_star(start_y, start_x, target_y, target_x):
 
-    start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_x), float(start_y))
-    target, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(target_x), float(target_y))
+    start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_y), float(start_x))
+    target, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(target_y), float(target_x))
     p, d = g.a_star(start, target, True)
     return {'cost': d, 'path': p}
 
 
-@app.get("/djikstra/{start_x}/{start_y}/{max_cost}")
-def djikstratarget(start_x, start_y, max_cost):
+@app.get("/djikstrarange/{start_y}/{start_x}/{max_cost}")
+def djikstrarange(start_y, start_x, max_cost):
 
-    start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_x), float(start_y))
+    start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_y), float(start_x))
     d, p, e = g.djikstra(start, None, float(max_cost))
 
     return {'costs': d, 'edges': e}
