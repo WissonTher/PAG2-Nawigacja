@@ -97,4 +97,4 @@ def djikstra(graph, start, target=None, max_cost=None):
                 if finished != start and edges:
                     edges.pop()
 
-    return [(-1 if x == inf else x) for x in lens], paths, alledges
+    return [x for x in lens if x != inf and x > 0], paths, alledges

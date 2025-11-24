@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from graph import Graph
-import pickle
-import numpy as np
+import pickle, shapely, geopandas
 from nearest_node import indeks_przestrzenny, najblizszy_wierzcholek
 
 app = FastAPI()
@@ -20,8 +19,8 @@ def djikstratarget(start_y, start_x, target_y, target_x):
     target, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(target_y), float(target_x))
     d, p, e = g.djikstra(start, target)
 
-    return {'cost': d,
-        'edges': e}
+    s = geopandas.GeoDataFrame({"cost": [d]}, geometry=[shapely.LineString([wierzcholki[node][:2] for node in p])], crs="EPSG:2180")
+    return s.to_json()
 
 @app.get("/a_star/{start_y}/{start_x}/{target_y}/{target_x}")
 def a_star(start_y, start_x, target_y, target_x):
@@ -29,7 +28,9 @@ def a_star(start_y, start_x, target_y, target_x):
     start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_y), float(start_x))
     target, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(target_y), float(target_x))
     p, d = g.a_star(start, target, True)
-    return {'cost': d, 'path': p}
+
+    s = geopandas.GeoDataFrame({"cost": [d]}, geometry=[shapely.LineString([wierzcholki[node][:2] for node in p])], crs="EPSG:2180")
+    return s.to_json()
 
 
 @app.get("/djikstrarange/{start_y}/{start_x}/{max_cost}")
@@ -37,5 +38,5 @@ def djikstrarange(start_y, start_x, max_cost):
 
     start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_y), float(start_x))
     d, p, e = g.djikstra(start, None, float(max_cost))
-
-    return {'costs': d, 'edges': e}
+    s = geopandas.GeoDataFrame({'cost': d, 'geometry': [shapely.buffer(shapely.LineString([wierzcholki[node][:2] for node in path]), 10) for path in p if path is not None and len(path) > 1]}, crs="EPSG:2180")
+    return s.to_json()
