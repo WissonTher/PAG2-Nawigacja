@@ -32,10 +32,11 @@ def a_star(start_y, start_x, target_y, target_x):
     s = geopandas.GeoDataFrame({"cost": [d]}, geometry=[shapely.LineString([wierzcholki[node][:2] for node in p])], crs="EPSG:2180")
     return Response(content=s.to_json(), media_type="application/json")
 
-@app.get("/djikstrarange/{start_y}/{start_x}/{max_cost}")
-def djikstrarange(start_y, start_x, max_cost):
+@app.get("/djikstrarange/{start_y}/{start_x}/{max_cost}/{buffer}")
+def djikstrarange(start_y, start_x, max_cost, buffer):
 
     start, _ = najblizszy_wierzcholek(drzewo, indeks_wierzcholka, float(start_y), float(start_x))
     d, p, e = g.djikstra(start, None, float(max_cost))
-    s = geopandas.GeoDataFrame({'cost': d, 'geometry': [shapely.buffer(shapely.LineString([wierzcholki[node][:2] for node in path]), 10) for path in p if path is not None and len(path) > 1]}, crs="EPSG:2180")
+    s = geopandas.GeoDataFrame({'cost': d, 'geometry': [shapely.buffer(shapely.LineString([wierzcholki[node][:2] for node in path]), float(buffer)) for path in p if path is not None and len(path) > 1]}, crs="EPSG:2180")
+    s = s.dissolve(aggfunc={'cost': 'max'})
     return Response(content=s.to_json(), media_type="application/json")
