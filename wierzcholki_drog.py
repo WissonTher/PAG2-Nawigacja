@@ -40,10 +40,9 @@ def najblizszy_wierzcholek(drzewo, indeks_wierzcholka, x_klik, y_klik):
 def przetworz_plik(shapefile):
     cursor = arcpy.SearchCursor(shapefile)
     wierzcholki = {}
-    krawedzie = {}
     lista_sasiedztwa = {}
     #0 - główna, 1 - lokalna, 2 - zbiorcza, 3 - wewnętrzna, 4 - dojazdowa
-    predkosci = {0: 90, 1: 50, 2: 40, 3: 30, 4: 20}
+    predkosci = {0: 100, 1: 60, 2: 80, 3: 30, 4: 40}
 
     def znajdz_lub_dodaj(wierzcholki, cache, x, y, kod, prec = 4):
         wspolrzedne = (round(x, prec), round(y, prec))
@@ -72,31 +71,16 @@ def przetworz_plik(shapefile):
 
         czas_s = dlugosc/predkosc_mps
 
-        krawedzie[row.FID] = [id1, id2, dlugosc, klasa_drogi]
-        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, row.FID, klasa_drogi, predkosc_kmh, czas_s])
-        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, row.FID, klasa_drogi, predkosc_kmh, czas_s])
+        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, czas_s])
+        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, czas_s])
 
-    return wierzcholki, krawedzie, lista_sasiedztwa
+    return wierzcholki, lista_sasiedztwa
 
-wierzcholki, krawedzie, lista_sasiedztwa = przetworz_plik(file)
-
-# drzewo_kd, mapa_id = indeks_przestrzenny(wierzcholki)
-# punkt1 = arcpy.Point(20.479, 53.778)
-# znalezione_id, dystans = najblizszy_wierzcholek(drzewo_kd, mapa_id, punkt1.X, punkt1.Y)
+wierzcholki, lista_sasiedztwa = przetworz_plik(file)
 
 with open('lista_sasiedztwa.pickle', 'wb') as f:
     pickle.dump(lista_sasiedztwa, f)
 
 with open('wierzcholki.pickle', 'wb') as f:
     pickle.dump(wierzcholki, f)
-
-# print(wierzcholki[znalezione_id])
-# print(znalezione_id, dystans)
-# # print(lista_sasiedztwa)
-# end = time.perf_counter()
-# print(end - start)
-# print (len(wierzcholki), len(krawedzie))
-
-# with open('lista_sasiedztwa.pickle', 'rb') as f:
-#     wczytane_dane = pickle.load(f)
 
