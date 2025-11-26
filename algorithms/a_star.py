@@ -41,7 +41,7 @@ def a_star(graph, start, target, return_cost=True):
         
         for neighbor_data in graph.adj[u]:
             v = neighbor_data[0]
-            w = neighbor_data[3] 
+            w = neighbor_data[2]
             
             if v in S: 
                 continue

@@ -73,8 +73,8 @@ def przetworz_plik(shapefile):
         czas_s = dlugosc/predkosc_mps
 
         krawedzie[row.FID] = [id1, id2, dlugosc, klasa_drogi]
-        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, row.FID, klasa_drogi, predkosc_kmh, czas_s])
-        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, row.FID, klasa_drogi, predkosc_kmh, czas_s])
+        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, czas_s])
+        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, czas_s])
 
     return wierzcholki, krawedzie, lista_sasiedztwa
 
