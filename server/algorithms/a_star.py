@@ -23,6 +23,7 @@ def a_star(graph, start, target, return_cost=True):
     Q = []
     heapq.heappush(Q, (f[start_id], start_id))
     came_from = {} 
+    origin_id = {}
     S = set() 
 
     while Q:
@@ -33,18 +34,22 @@ def a_star(graph, start, target, return_cost=True):
 
         if u == target_id:
             path = [nodes[u]]
+            origin = []
             while u in came_from:
+                origin.append(origin_id[u])
                 u = came_from[u]
                 path.append(nodes[u])
             path = path[::-1]
+            origin = origin[::-1]
             if return_cost:
-                return path, g[target_id], dist[target_id]
-            return path
+                return path, g[target_id], dist[target_id], origin
+            return path, origin
         
         for neighbor_data in graph.adj[u]:
             v = neighbor_data[0]
             d = neighbor_data[1]
-            w = neighbor_data[3] 
+            w = neighbor_data[2] 
+            e = neighbor_data[3]
             
             if v in S: 
                 continue
@@ -54,6 +59,7 @@ def a_star(graph, start, target, return_cost=True):
             
             if temp_g < g[v]:
                 came_from[v] = u
+                origin_id[v] = e
                 g[v] = temp_g
                 dist[v] = temp_d
                 
@@ -63,5 +69,5 @@ def a_star(graph, start, target, return_cost=True):
                 heapq.heappush(Q, (f[v], v))
     
     if return_cost:
-        return None, float('inf'), float('inf')
-    return None
+        return None, float('inf'), float('inf'), []
+    return None, []
