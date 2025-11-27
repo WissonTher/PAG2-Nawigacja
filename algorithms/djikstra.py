@@ -6,7 +6,6 @@ def djikstra(graph, start, target=None, max_cost=None):
     lens[start] = 0.0
     S = bytearray(n)
     pre = [-1] * n
-    preedge = [-1] * n
 
     adj = graph.adj
     heappush = heapq.heappush
@@ -22,51 +21,45 @@ def djikstra(graph, start, target=None, max_cost=None):
             S[u] = 1
             if u == target:
                 break
-            for v, _, e, _, _, w in adj[u]:
+            for v, _, w in adj[u]:
                 if S[v]:
                     continue
                 alt = d + w
                 if alt < lens[v]:
                     lens[v] = alt
                     pre[v] = u
-                    preedge[v] = e
                     heappush(heap, (alt, v))
 
         if lens[target] == inf:
             return -1, None, None
 
         path = []
-        edges = []
         cur = target
         while cur != -1:
             path.append(cur)
             if cur == start:
                 break
-            edges.append(preedge[cur])
             cur = pre[cur]
         if not path or path[-1] != start:
             return -1, None, None
         path.reverse()
-        edges.reverse()
-        return lens[target], path, edges
+        return lens[target], path
 
     while heap:
         d, u = heappop(heap)
         if S[u] or d != lens[u]:
             continue
         S[u] = 1
-        for v, _, e, _, _, w in adj[u]:
+        for v, _, w in adj[u]:
             if S[v]:
                 continue
             alt = d + w
             if alt < lens[v] and (max_cost is None or alt <= max_cost):
                 lens[v] = alt
                 pre[v] = u
-                preedge[v] = e
                 heappush(heap, (alt, v))
 
     paths = [None] * n
-    alledges = [None] * n
 
     if lens[start] != inf:
         connections = [[] for _ in range(n)]
@@ -84,12 +77,10 @@ def djikstra(graph, start, target=None, max_cost=None):
             if idx == 0:
                 path.append(u)
                 paths[u] = list(path)
-                alledges[u] = [] if u == start else list(edges)
 
             if idx < len(connections[u]):
                 connect = connections[u][idx]
                 stack[-1] = (u, idx + 1)
-                edges.append(preedge[connect])
                 stack.append((connect, 0))
             else:
                 stack.pop()
@@ -97,4 +88,4 @@ def djikstra(graph, start, target=None, max_cost=None):
                 if finished != start and edges:
                     edges.pop()
 
-    return [x for x in lens if x != inf and x > 0], paths, alledges
+    return [x for x in lens if x != inf and x > 0], paths
