@@ -2,8 +2,10 @@ import heapq
 def djikstra(graph, start, target=None, max_cost=None):
     n = graph.n_len
     inf = float('inf')
-    lens = [inf] * n
-    lens[start] = 0.0
+    costs = [inf] * n
+    dists = [inf] * n
+    costs[start] = 0.0
+    dists[start] = 0.0
     S = bytearray(n)
     pre = [-1] * n
 
@@ -11,26 +13,28 @@ def djikstra(graph, start, target=None, max_cost=None):
     heappush = heapq.heappush
     heappop = heapq.heappop
 
-    heap = [(0.0, start)]
+    heap = [(0.0, start, 0.0)]
 
     if target is not None:
         while heap:
-            d, u = heappop(heap)
-            if S[u] or d != lens[u]:
+            d, u, pl = heappop(heap)
+            if S[u] or d != costs[u]:
                 continue
             S[u] = 1
             if u == target:
                 break
-            for v, _, w in adj[u]:
+            for v, nl, w in adj[u]:
                 if S[v]:
                     continue
                 alt = d + w
-                if alt < lens[v]:
-                    lens[v] = alt
+                ul = pl + nl
+                if alt < costs[v]:
+                    costs[v] = alt
+                    dists[v] = ul
                     pre[v] = u
-                    heappush(heap, (alt, v))
+                    heappush(heap, (alt, v, ul))
 
-        if lens[target] == inf:
+        if costs[target] == inf:
             return -1, None, None
 
         path = []
@@ -43,25 +47,28 @@ def djikstra(graph, start, target=None, max_cost=None):
         if not path or path[-1] != start:
             return -1, None, None
         path.reverse()
-        return lens[target], path
+        print(1, dists[target])
+        return costs[target], path, dists[target]
 
     while heap:
-        d, u = heappop(heap)
-        if S[u] or d != lens[u]:
+        d, u, pl = heappop(heap)
+        if S[u] or d != costs[u]:
             continue
         S[u] = 1
-        for v, _, w in adj[u]:
+        for v, nl, w in adj[u]:
             if S[v]:
                 continue
             alt = d + w
-            if alt < lens[v] and (max_cost is None or alt <= max_cost):
-                lens[v] = alt
+            ul = pl + nl
+            if alt < costs[v] and (max_cost is None or alt <= max_cost):
+                costs[v] = alt
+                dists[v] = ul
                 pre[v] = u
-                heappush(heap, (alt, v))
+                heappush(heap, (alt, v, ul))
 
     paths = [None] * n
 
-    if lens[start] != inf:
+    if costs[start] != inf:
         connections = [[] for _ in range(n)]
         for v in range(n):
             p = pre[v]
@@ -88,4 +95,4 @@ def djikstra(graph, start, target=None, max_cost=None):
                 if finished != start and edges:
                     edges.pop()
 
-    return [x for x in lens if x != inf and x > 0], paths
+    return costs, paths

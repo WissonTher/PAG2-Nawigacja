@@ -78,9 +78,9 @@ def przetworz_plik(shapefile):
 
 wierzcholki, lista_sasiedztwa = przetworz_plik(file)
 
-with open('lista_sasiedztwa.pickle', 'wb') as f:
+with open('server/lista_sasiedztwa.pickle', 'wb') as f:
     pickle.dump(lista_sasiedztwa, f)
 
-with open('wierzcholki.pickle', 'wb') as f:
+with open('server/wierzcholki.pickle', 'wb') as f:
     pickle.dump(wierzcholki, f)
 
