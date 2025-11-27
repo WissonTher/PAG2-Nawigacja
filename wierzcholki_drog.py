@@ -3,10 +3,16 @@ import numpy as np
 import time
 from scipy.spatial import KDTree
 import pickle
+import geopandas as gpd
 
 start = time.perf_counter()
-arcpy.env.workspace = r"./test"
-file = 'warmia_skjz.shp'
+arcpy.env.workspace = r"C:\3rok\pag2\proj1\warmia"
+file = 'drogi.shp'
+
+gdf = gpd.read_file(r"C:\3rok\pag2\proj1\warmia\drogi.shp")
+print(gdf.head())
+sciezka_pickle = r'server\drogi.pickle'
+gdf['geometry'].to_pickle(sciezka_pickle)
 
 def indeks_przestrzenny(wierzcholki):
     wspolrzedne_lista = []
@@ -59,6 +65,7 @@ def przetworz_plik(shapefile):
         p2 = [row.Shape.lastPoint.X, row.Shape.lastPoint.Y]
         kod = row.LOKALNYID
         klasa_drogi = row.KLASA_DROG
+        identyfikator = row.FID
 
         id1 = znajdz_lub_dodaj(wierzcholki, cache_xy, p1[0], p1[1], kod)
         id2 = znajdz_lub_dodaj(wierzcholki, cache_xy, p2[0], p2[1], kod)
@@ -71,10 +78,16 @@ def przetworz_plik(shapefile):
 
         czas_s = dlugosc/predkosc_mps
 
-        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, czas_s])
-        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, czas_s])
+        lista_sasiedztwa.setdefault(id1, []).append([id2, dlugosc, czas_s, identyfikator])
+        lista_sasiedztwa.setdefault(id2, []).append([id1, dlugosc, czas_s, identyfikator])
+
 
     return wierzcholki, lista_sasiedztwa
+
+gdf = gpd.read_file(r"C:\3rok\pag2\proj1\warmia\drogi.shp")
+print(gdf.head())
+sciezka_pickle = 'drogi.pickle'
+gdf['geometry'].to_pickle(sciezka_pickle)
 
 wierzcholki, lista_sasiedztwa = przetworz_plik(file)
 
@@ -83,4 +96,3 @@ with open('server/lista_sasiedztwa.pickle', 'wb') as f:
 
 with open('server/wierzcholki.pickle', 'wb') as f:
     pickle.dump(wierzcholki, f)
-
