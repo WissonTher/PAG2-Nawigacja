@@ -13,9 +13,11 @@ def a_star(graph, start, target, return_cost=True):
     start_id = nodes.index(start) 
     target_id = nodes.index(target)
     
-    g = [float('inf')] * graph.n_len 
+    g = [float('inf')] * graph.n_len
+    dist = [float('inf')] * graph.n_len
     f = [float('inf')] * graph.n_len 
     g[start_id] = 0
+    dist[start_id] = 0
     f[start_id] = heuristics(graph, start, target) 
 
     Q = []
@@ -36,20 +38,24 @@ def a_star(graph, start, target, return_cost=True):
                 path.append(nodes[u])
             path = path[::-1]
             if return_cost:
-                return path, g[target_id]
+                return path, g[target_id], dist[target_id]
             return path
         
         for neighbor_data in graph.adj[u]:
             v = neighbor_data[0]
+            d = neighbor_data[1]
             w = neighbor_data[3] 
             
             if v in S: 
                 continue
 
             temp_g = g[u] + w 
+            temp_d = dist[u] + d
+            
             if temp_g < g[v]:
                 came_from[v] = u
                 g[v] = temp_g
+                dist[v] = temp_d
                 
                 v = nodes[v]
                 f[v] = temp_g + heuristics(graph, v, target)
@@ -57,5 +63,5 @@ def a_star(graph, start, target, return_cost=True):
                 heapq.heappush(Q, (f[v], v))
     
     if return_cost:
-        return None, float('inf')
+        return None, float('inf'), float('inf')
     return None
