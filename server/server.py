@@ -2,7 +2,6 @@ from fastapi import FastAPI, Response
 from graph import Graph
 import pickle, shapely, geopandas, pandas
 from nearest_node import indeks_przestrzenny, najblizszy_wierzcholek
-print("loading...")
 app = FastAPI()
 with open('lista_sasiedztwa.pickle', 'rb') as f:
     lista_sasiedztwa = pickle.load(f)
@@ -11,7 +10,6 @@ with open('wierzcholki.pickle', 'rb') as f:
 drzewo, indeks_wierzcholka = indeks_przestrzenny(wierzcholki)
 g = Graph(wierzcholki, lista_sasiedztwa)
 roadnetwork = pandas.read_pickle('drogi.pickle')
-print("loaded")
 bins = [0, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600, 3900, 4200, 4500, 4800, 5100, 5400, 5700, 6000, 6300, 6600, 6900, 7200]
 @app.get("/djikstratarget/{start_y}/{start_x}/{target_y}/{target_x}")
 def djikstratarget(start_y, start_x, target_y, target_x):
@@ -43,7 +41,7 @@ def djikstrarange(start_y, start_x, max_cost, buffer, step, simplified):
             for i, path in enumerate(p):
                 if path is not None and len(path) > 1:
                     cost = d[i]
-                    buffer = max(0, maxbuffer - (step * (cost // 300)))
+                    buffer = max(1, maxbuffer - (step * (cost // 300)))
                     line = shapely.LineString([wierzcholki[node][:2] for node in path])
                     simplified_line = line.simplify(tolerance=5)
                     geom.append({'cost': cost, 'geometry': simplified_line.buffer(buffer)})
@@ -58,4 +56,8 @@ def djikstrarange(start_y, start_x, max_cost, buffer, step, simplified):
     s = geopandas.GeoDataFrame(geom, crs="EPSG:2180")
     s['grupy'] = pandas.cut(s['cost'], bins=bins).astype(str)
     s = s.dissolve(by='grupy', aggfunc={'cost': 'max'})
-    return Response(content=s.to_json(), media_type="application/json")
+    s = s.sort_values('cost', ascending=False).reset_index(drop=True)
+    c = s.copy()
+    for i in range(0, len(s) - 1):
+        c.at[i, 'geometry'] = s.at[i, 'geometry'].difference(s.at[i + 1, 'geometry'])
+    return Response(content=c.to_json(), media_type="application/json")
