@@ -43,6 +43,6 @@ function createIcon(url) {
     });
 }
 
-var endIcon = createIcon('icons/endpoint.png'); 
-var startIcon = createIcon('icons/startpoint.png'); 
-var rangeIcon = createIcon('icons/rangepoint.png');
+var endIcon = createIcon('website/icons/endpoint.png'); 
+var startIcon = createIcon('website/icons/startpoint.png'); 
+var rangeIcon = createIcon('website/icons/rangepoint.png');
