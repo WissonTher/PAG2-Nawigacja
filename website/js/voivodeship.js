@@ -1,5 +1,5 @@
 // Reading edge of the AoI border
-fetch('data/voivodeship.geojson?' + Date.now())
+fetch('website/data/voivodeship.geojson?' + Date.now())
     .then(response => response.json())
     .then(data => {
         L.geoJSON(data, {
