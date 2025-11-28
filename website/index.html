@@ -13,57 +13,12 @@
     <div id="map"></div>
 
     <script src="leaflet/dist/leaflet.js"></script>
-
-    <script>
-        var map = L.map('map', {
-            maxZoom: 20
-        }).setView([53.01, 18.6], 12)
-        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'});
-        osm.addTo(map)
-
-        function onMapClick(e) {
-            marker = new L.marker(e.latlng, {icon: endIcon}, {draggable:'true'});
-            marker.on('dragend', function(event){
-                var marker = event.target;
-                var position = marker.getLatLng();
-                marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
-                map.panTo(new L.LatLng(position.lat, position.lng))
-            });
-            map.addLayer(marker);
-            };
-
-            map.on('click', onMapClick);
-        
-        function createIcon(url) {
-            return L.icon({
-                iconUrl: url,
-                iconSize: [15, 15],
-                iconAnchor: [7.5, 7.5],
-                popupAnchor: [0, -7.5]
-            });
-        }
-        var endIcon = createIcon('icons/endpoint.png');
-        
-        var modeControl = L.control({position: 'topleft'});
-        modeControl.onAdd = function(map) {
-            var div = L.DomUtil.create('div', 'mode-toggle');
-
-            div.innerHTML = `
-                <div class="mode-label">Sezon</div>
-                <label class="switch">
-                    <input type="checkbox" id="modeCheckbox">
-                    <span class="slider">
-                    </span>
-                </label>
-            `;
-            var checkbox = div.querySelector("#modeCheckbox");
-            L.DomEvent.on(checkbox, 'change', function(e) {
-                L.DomEvent.stopPropagation(e);
-                L.DomEvent.preventDefault(e);
-            });
-            return div;
-        };
-        modeControl.addTo(map);
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+    
+    <script src="js/map_init.js"></script>
+    <script src="js/functions.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/voivodeship.js"></script>
 </body>
 </html>

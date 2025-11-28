@@ -28,23 +28,111 @@ html, body, #map {
 }
 
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 26px;
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 21px;
 }
 
 .switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #FFD43B;
-  transition: .3s;
-  border-radius: 26px;
+    position: absolute;
+    cursor: pointer;
+    top: 0; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 21px;
+    background-color: #ff803b;
+    transition: .3s;
+    border-radius: 26px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 15px;
+    width: 15px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background-color: #37A2EE; 
+}
+
+input:checked + .slider::before {
+    transform: translateX(38px); 
+}
+
+.coord-panel-container {
+    margin-left: 110px !important;
+    font-family: 'Helvetica Neue', sans-serif;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
+    color: #4d4d4d;
+    font-weight: bold;
+}
+
+.coord-panel-container input[type="text"] {
+    width: 100px !important; 
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    color: #4d4d4d;
+}
+
+.custom-leaflet-button {
+    cursor: pointer;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    padding: 2px 8px;
+    height: 30px;
+    width: 93px;
+    background-color: white;
+    color: #4d4d4d;
+    border: 0px !important;
+}
+
+.custom-run-control {
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
+    border: 0px !important;
+    transform: translateY(-10px) translateX(40px)
+}
+
+#map .leaflet-popup-content h4 {
+    color: #004d99;     
+    font-size: 14px; 
+    margin: 0 0 0 0; 
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+#rangePanel {
+    background-color: #f7f7f7; 
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
+    border: 0px !important;
+    margin-bottom: 5px; 
+    width: 200px;
+    height: 60px;
+    display: none;
+    transform: translateY(-115px) translateX(140px);
+    color: #4d4d4d;
+}
+
+.algo-panel-container {
+    width: 70px;
+    transform: translateY(0) translateX(225px);
+    color: #4d4d4d;
 }
